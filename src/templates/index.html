@@ -23,22 +23,54 @@
                 input.value = "";
                 }    
             }
+
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle('active');  
+                document.getElementById("main").classList.toggle('shifted');
+            }
     </script>
 </head>
 <body>
-    <h1>Recipe Generator</h1>
-    <form method="POST">
-        <label>What's in your refrigerator?:</label>
-        <input type="text" id="ingredient" placeholder="e.g., chicken">
-        <button type="button" onclick="addIngredient()">Add Ingredient</button>
+    <div id="sidebar" class="sidebar">
+        <button class ="closebtn" onclick="toggleSidebar()">x</button>
+        <a href="#">Main Page</a>
+        <a href="#">Recipes</a>
+        <a href="#">Profiles</a>
+    </div>
 
-        <h3>Ingredients:</h3>
-        <ul id="ingredientsList"></ul>
+    <div class="topbar">
+        <button class ="openbtn" onclick="toggleSidebar()">☰</button>
+        <h1>Recipe Generator</h1>
+    </div>
+    
+    <div id="main">
+        <form method="POST">
+            <label>What's in your refrigerator?:</label>
+            <input type="text" id="ingredient" placeholder="e.g., chicken">
+              <div class="recipe-type-filter">
+        <label>Choose Recipe type(s):</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="recipe_type" value="breakfast"> Breakfast</label>
+            <label><input type="checkbox" name="recipe_type" value="main course"> Main Course</label>
+            <label><input type="checkbox" name="recipe_type" value="side dish"> Side Dish</label>
+            <label><input type="checkbox" name="recipe_type" value="dessert"> Dessert</label>
+            <label><input type="checkbox" name="recipe_type" value="appetizer"> Appetizer</label>
+            <label><input type="checkbox" name="recipe_type" value="salad"> Salad</label>
+            <label><input type="checkbox" name="recipe_type" value="soup"> Soup</label>
+        </div>
+    </div>
 
-        <input type="hidden" name="ingredients" id="ingredientsHidden" />
+            <div class ="button-group">
+                <button type="button" onclick="addIngredient()">Add Ingredient</button>
+            </div>
 
-        <br><br>
-        <button type="submit">Find your recipes</button>
-    </form>
+            <h3>Ingredients:</h3>
+            <ul id="ingredientsList"></ul>
+
+            <div class ="button-group">
+                <button type="submit">Find your recipes</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

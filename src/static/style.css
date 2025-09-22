@@ -38,7 +38,9 @@ h1, h2, h3 {
 
 /* Forms */
 form {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -55,12 +57,13 @@ label {
 }
 
 input[type="text"] {
-    width: 100%;
+    width: 80%;
     padding: 10px;
     border: 2px solid #cbd5e1;
     border-radius: 6px;
     margin-bottom: 15px;
     transition: border-color 0.3s;
+    text-align: center;
 }
 
 input[type="text"]:focus {
@@ -88,6 +91,20 @@ button:hover {
 button:active {
     transform: translateY(0);
 }
+.openbtn {
+    font-size:1.2rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px
+}
 
 /* Ingredient List */
 ul {
@@ -104,6 +121,12 @@ ul li {
     color: #1e40af;
     font-weight: 500;
     text-transform: capitalize;
+}
+
+il#ingredientsList {
+    width: 80%;
+    text-align: center;
+    padding-left: 0; 
 }
 
 /* Recipe Cards (Results Page) */
@@ -151,4 +174,68 @@ ul li {
     max-width: 100%;
     border-radius: 10px;
     margin: 15px 0;
+}
+
+/*SideBar*/
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #1e3a8a;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+    z-index: 1000;
+}
+.sidebar a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    color: #f9fafb;
+    display: block;
+    transition: 0.2s;
+}
+.sidebar a:hover {
+    background-color: #2563eb;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+.sidebar.active {
+    width: 220px;
+}
+
+/*Top Bar*/
+.topbar {
+    display: flex;
+    align-items: center;
+    background: #2563eb;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.topbar h1 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+}
+
+#main {
+    transition: margin-left 0.3s;
+    padding: 20px;
+}
+
+#main.shifted {
+    margin-left: 220px;
 }

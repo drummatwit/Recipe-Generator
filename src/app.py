@@ -7,7 +7,8 @@ app = Flask(__name__)
 def index():
     if request.method == 'POST':
         ingredients = [item.strip().capitalize() for item in request.form["ingredients"].split(",") if item.strip()]
-        recipes = find_recipes_by_ingredients(ingredients, number=5)
+        recipe_type = request.form.get("recipe_type")
+        recipes = find_recipes_by_ingredients(ingredients, recipe_type=recipe_type, number=20)
         return render_template("results.html", recipes=recipes, ingredients=ingredients)
     return render_template("index.html")
 
