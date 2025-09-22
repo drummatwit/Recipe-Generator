@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title> {{ recipe['title'] }} </title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>{{ recipe['title'] }}</h1>
+
+    <div class ="recipe-card">
+        <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
+    
+        <h2>Ingredients:</h2>
+        <ul>
+            {% for ingredient in recipe['extendedIngredients'] %}
+                <li>{{ ingredient['original'] }}</li>
+            {% endfor %}
+        </ul>
+        <h2>Instructions:</h2>
+        <p>{{ recipe.get('instructions', 'No instructions available.')|safe }}</p>
+    </div>
+    
+    <br>
+    <a href="{{ url_for('index') }}">
+        <button>Back to Home</button>
+    </a>
+</body>
+</html>

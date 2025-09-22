@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recipes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Recipes for {{ ingredients | join(', ') }}</h1>
+
+    <div class="recipes">
+        {% for recipe in recipes %}
+            <div class="recipe-card">
+                <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
+                <a href="{{ url_for('recipe', recipe_id=recipe['id']) }}">
+                    {{ recipe['title'] }}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <br>
+    <a href="{{ url_for('index') }}">
+        <button> Back to Search</button>
+    </a>
+</body>
+</html>
