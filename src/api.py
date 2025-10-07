@@ -8,8 +8,6 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env.local"))
 API_KEY = os.getenv("API_KEY")
 API_URL = os.getenv("API_URL")
 
-print("🔑 API Key loaded:", "✅ Found" if API_KEY else "❌ Missing")
-
 def find_recipes_by_ingredients(ingredients, recipe_type=None, number=20):
     url = API_URL
     params = {
