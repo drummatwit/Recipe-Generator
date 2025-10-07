@@ -4,31 +4,48 @@
     <title>Recipe Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
-        function addIngredient() {
-            const input = document.getElementById("ingredient");
-            const list = document.getElementById("ingredientsList");
-            const hidden = document.getElementById("ingredientsHidden");
+    function addIngredient() {
+        const input = document.getElementById("ingredient");
+        const list = document.getElementById("ingredientsList");
+        const hidden = document.getElementById("ingredientsHidden");
 
-            if (input.value.trim() !== "") {
-                const li = document.createElement("li");
-                li.textContent = input.value;
-                list.appendChild(li);
+        if (input.value.trim() !== "") {
+            const li = document.createElement("li");
+            li.textContent = input.value;
+            list.appendChild(li);
 
-                if (hidden.value === "") {
-                    hidden.value = input.value;
+            if (hidden.value === "") {
+                hidden.value = input.value;
+            } else {
+                hidden.value += "," + input.value;
+            }
+            
+            input.value = "";
+        }    
+    }
+
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle('active');  
+        document.getElementById("main").classList.toggle('shifted');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const collapsibles = document.querySelectorAll(".collapsible");
+
+        collapsibles.forEach((btn) => {
+            btn.addEventListener("click", function() {
+                this.classList.toggle("active");
+                const content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
                 } else {
-                    hidden.value += "," + input.value;
+                    content.style.display = "block";
                 }
-                
-                input.value = "";
-                }    
-            }
+            });
+        });
+    });
+</script>
 
-            function toggleSidebar() {
-                document.getElementById("sidebar").classList.toggle('active');  
-                document.getElementById("main").classList.toggle('shifted');
-            }
-    </script>
 </head>
 <body>
     <div id="sidebar" class="sidebar">
@@ -49,6 +66,7 @@
             <input type="text" id="ingredient" placeholder="e.g., chicken">
               <div class="recipe-type-filter">
         <label>Choose Recipe type(s):</label>
+        <button type = "button" class = "collapsible"> Choose Recipe Type(s)</button>
         <div class="checkbox-group">
             <label><input type="checkbox" name="recipe_type" value="breakfast"> Breakfast</label>
             <label><input type="checkbox" name="recipe_type" value="main course"> Main Course</label>
@@ -66,6 +84,8 @@
 
             <h3>Ingredients:</h3>
             <ul id="ingredientsList"></ul>
+
+            <input type="hidden" id="ingredientsHidden" name="ingredients">
 
             <div class ="button-group">
                 <button type="submit">Find your recipes</button>
