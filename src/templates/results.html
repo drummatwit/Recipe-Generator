@@ -1,28 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Recipes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results — Recipe Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Recipes for {{ ingredients | join(', ') }}</h1>
 
-    <div class="recipes">
-        {% for recipe in recipes %}
-            <div class="recipe-card">
-                <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
-                <a href="{{ url_for('recipe', recipe_id=recipe['id']) }}">
-                    {{ recipe['title'] }}
-                </a>
-            </div>
-        {% else %}
-            <p>No recipes found.</p>
-        {% endfor %}
+    <div class="topbar">
+        <a href="{{ url_for('index') }}" class="openbtn" aria-label="Back to search">←</a>
+        <h1>Results</h1>
+        <div style="width: 28px;"></div>
     </div>
 
-    <br>
-    <a href="{{ url_for('index') }}">
-        <button> Back to Search</button>
-    </a>
+    <div id="main">
+        <div class="results-header">
+            <p class="results-meta">
+                Showing recipes using
+                {% for ing in ingredients %}
+                    <span class="tag-pill">{{ ing }}</span>{% if not loop.last %} {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+ 
+        {% if recipes %}
+            <div class="recipes">
+                {% for recipe in recipes %}
+                    <a href="{{ url_for('recipe', recipe_id=recipe['id']) }}" class="recipe-card">
+                        {% if recipe.get('image') %}
+                            <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
+                        {% endif %}
+                        <span class="recipe-card-title">{{ recipe['title'] }}</span>
+
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No recipes found.</p>
+                <p class="empty-hint">Try fewer ingredients or remove a meal type filter.</p>
+                <a href="{{ url_for('index') }}" class="btn-primary" style="display:inline-block; margin-top:16px; text-decoration:none;">Back to Search</a>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>

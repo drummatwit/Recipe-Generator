@@ -1,37 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-   <title>{{ recipe['title'] }}</title>
-   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe['title'] }} — Recipe Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="recipe-detail">
-        <h1>{{ recipe['title'] }}</h1>
 
-        <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
-
-        <h2>Ingredients:</h2>
-        <ul>
-            {% for ingredient in recipe['extendedIngredients'] %}
-                <li>{{ ingredient['original'] }}</li>
-            {% endfor %}
-        </ul>
-
-        <h2>Instructions:</h2>
-        {% if recipe.get('steps') %}
-        <ol>
-            {% for step in recipe['steps'] %}
-                <li>{{ step }}</li>
-            {% endfor %}
-        </ol>
-        {% else %}
-        <p>{{ recipe.get('instructions', 'No instructions available.') | safe }}</p>
-        {% endif %}
-
-        <br>
-        <a href="{{ url_for('index') }}">
-            <button>Back to Home</button>
-        </a>
+    <div class="topbar">
+        <a href="javascript:history.back()" class="openbtn" aria-label="Go back">←</a>
+        <h1>Recipe</h1>
+        <div style="width: 28px;"></div>
     </div>
+
+    <div id="main">
+        <div class="recipe-detail">
+
+            <h1>{{ recipe['title'] }}</h1>
+
+            {% if recipe.get('readyInMinutes') or recipe.get('servings') %}
+                <div class="recipe-meta-row">
+                    {% if recipe.get('readyInMinutes') %}
+                        <span class="meta-badge">⏱ {{ recipe['readyInMinutes'] }} min</span>
+                    {% endif %}
+                    {% if recipe.get('servings') %}
+                        <span class="meta-badge">🍽 {{ recipe['servings'] }} servings</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if recipe.get('image') %}
+                <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}">
+            {% endif %}
+
+            {% if recipe.get('summary') %}
+                <p class="recipe-summary">{{ recipe['summary'] | striptags | truncate(200) }}</p>
+            {% endif %}
+
+            <h2>Ingredients</h2>
+            <ul>
+                {% for ingredient in recipe.get('extendedIngredients', []) %}
+                    <li>{{ ingredient['original'] }}</li>
+                {% else %}
+                    <li>Ingredient list unavailable.</li>
+                {% endfor %}
+            </ul>
+
+            <h2>Instructions</h2>
+            {% if recipe.get('steps') %}
+                <ol>
+                    {% for step in recipe['steps'] %}
+                        <li>{{ step }}</li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <p>{{ recipe.get('instructions', 'No instructions available.') | safe }}</p>
+            {% endif %}
+
+            {% if recipe.get('sourceUrl') %}
+                <a href="{{ recipe['sourceUrl'] }}" target="_blank" rel="noopener" class="source-link">
+                    View original recipe ↗
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+
 </body>
 </html>

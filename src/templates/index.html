@@ -1,96 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script>
-    function addIngredient() {
-        const input = document.getElementById("ingredient");
-        const list = document.getElementById("ingredientsList");
-        const hidden = document.getElementById("ingredientsHidden");
-
-        if (input.value.trim() !== "") {
-            const li = document.createElement("li");
-            li.textContent = input.value;
-            list.appendChild(li);
-
-            if (hidden.value === "") {
-                hidden.value = input.value;
-            } else {
-                hidden.value += "," + input.value;
-            }
-            
-            input.value = "";
-        }    
-    }
-
-    function toggleSidebar() {
-        document.getElementById("sidebar").classList.toggle('active');  
-        document.getElementById("main").classList.toggle('shifted');
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const collapsibles = document.querySelectorAll(".collapsible");
-
-        collapsibles.forEach((btn) => {
-            btn.addEventListener("click", function() {
-                this.classList.toggle("active");
-                const content = this.nextElementSibling;
-                if (content.style.display === "block") {
-                    content.style.display = "none";
-                } else {
-                    content.style.display = "block";
-                }
-            });
-        });
-    });
-</script>
-
 </head>
 <body>
+
     <div id="sidebar" class="sidebar">
-        <button class ="closebtn" onclick="toggleSidebar()">x</button>
-        <a href="#">Main Page</a>
-        <a href="#">Recipes</a>
-        <a href="#">Profiles</a>
+        <button class="closebtn" onclick="toggleSidebar()" aria-label="Close menu">✕</button>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="#">Saved Recipes</a>
+        <a href="#">Profile</a>
     </div>
 
     <div class="topbar">
-        <button class ="openbtn" onclick="toggleSidebar()">☰</button>
+        <button class="openbtn" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
         <h1>Recipe Generator</h1>
-    </div>
-    
-    <div id="main">
-        <form method="POST">
-            <label>What's in your refrigerator?:</label>
-            <input type="text" id="ingredient" placeholder="e.g., chicken">
-              <div class="recipe-type-filter">
-        <label>Choose Recipe type(s):</label>
-        <button type = "button" class = "collapsible"> Choose Recipe Type(s)</button>
-        <div class="checkbox-group">
-            <label><input type="checkbox" name="recipe_type" value="breakfast"> Breakfast</label>
-            <label><input type="checkbox" name="recipe_type" value="main course"> Main Course</label>
-            <label><input type="checkbox" name="recipe_type" value="side dish"> Side Dish</label>
-            <label><input type="checkbox" name="recipe_type" value="dessert"> Dessert</label>
-            <label><input type="checkbox" name="recipe_type" value="appetizer"> Appetizer</label>
-            <label><input type="checkbox" name="recipe_type" value="salad"> Salad</label>
-            <label><input type="checkbox" name="recipe_type" value="soup"> Soup</label>
-        </div>
+        <div style="width: 28px;"></div>
     </div>
 
-            <div class ="button-group">
-                <button type="button" onclick="addIngredient()">Add Ingredient</button>
+    <div id="main">
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+         
+        <form method="POST">
+            <label for="ingredient">What's in your fridge?</label>
+ 
+            <div class="input-row">
+                <input
+                    type="text"
+                    id="ingredient"
+                    placeholder="e.g. chicken, garlic…"
+                    autocomplete="off"
+                >
+                <button type="button" onclick="addIngredient()">+ Add</button>
+                <button type="button" onclick="document.getElementById('imageUpload').click()">Scan Fridge</button>
+                <input type="file" id="imageUpload" accept="image/*" style="display:none">
             </div>
 
-            <h3>Ingredients:</h3>
-            <ul id="ingredientsList"></ul>
-
+            <ul id="ingredientsList" class="tag-list"></ul>
+            <p class="scan-hint" id="scanHint" style="display:none">
+                Remove any items you don't want to cook with, then search.
+            </p>
             <input type="hidden" id="ingredientsHidden" name="ingredients">
 
-            <div class ="button-group">
-                <button type="submit">Find your recipes</button>
+            <div class="recipe-type-filter">
+                <label>Meal type <span class="label-hint">(optional)</span></label>
+                <div class="chip-group" id="mealChips">
+                    <button type="button" class="meal-chip" data-value="breakfast">Breakfast</button>
+                    <button type="button" class="meal-chip" data-value="main course">Main Course</button>
+                    <button type="button" class="meal-chip" data-value="side dish">Side Dish</button>
+                    <button type="button" class="meal-chip" data-value="dessert">Dessert</button>
+                    <button type="button" class="meal-chip" data-value="appetizer">Appetizer</button>
+                    <button type="button" class="meal-chip" data-value="salad">Salad</button>
+                    <button type="button" class="meal-chip" data-value="soup">Soup</button>
+                </div>
+                <div id="hiddenCheckboxes" style="display: none;"></div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Find Recipes</button>
             </div>
         </form>
     </div>
+    <script>
+
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+            document.getElementById("main").classList.toggle("shifted");
+        }
+
+        function addIngredient() {
+            const input = document.getElementById("ingredient");
+            const list = document.getElementById("ingredientsList");
+            const hidden = document.getElementById("ingredientsHidden");
+            const val = input.value.trim();
+            if (!val) return;
+
+            const existing = [...list.querySelectorAll("li")].map(li => li.dataset.value.toLowerCase());
+            if (existing.includes(val.toLowerCase())) {
+                input.value = "";
+                return;
+            } 
+            const li = document.createElement("li");
+            li.dataset.value = val;
+            li.innerHTML = `${val} <button type="button" class="tag-remove" aria-label="Remove ${val}">×</button>`;
+            li.querySelector(".tag-remove").addEventListener("click", () => {
+                li.remove();
+                syncHidden();
+            }); 
+            list.appendChild(li);
+            syncHidden();
+            input.value = "";
+            input.focus();
+        }
+        
+        function syncHidden() {
+            const values = [...document.querySelectorAll("#ingredientsList li")].map(li => li.dataset.value);
+            document.getElementById("ingredientsHidden").value = values.join(",");
+        }
+
+        function syncMealChips() {
+            const container = document.getElementById("hiddenCheckboxes");
+            container.innerHTML = "";
+            document.querySelectorAll(".meal-chip.active").forEach(btn => {
+                const cb = document.createElement("input");
+                cb.type    = "checkbox";
+                cb.name    = "recipe_type";
+                cb.value   = btn.dataset.value;
+                cb.checked = true;
+                container.appendChild(cb);
+            });
+        }
+
+        document.getElementById("imageUpload").addEventListener("change", async function () {
+            const file = this.files[0];
+            if (!file) return; 
+
+            if (file.size > 5 * 1024 * 1024) { 
+                alert("Image to large - please use a photo under 5MB.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const response = await fetch("/scan", {
+                    method: "POST", 
+                    body: formData       
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    alert("Scan failed: " + data.error); 
+                    return
+                }
+
+                data.ingredients.forEach(ingredient => {
+                    document.getElementById("ingredient").value = ingredient;
+                    addIngredient();
+                });
+                document.getElementById("scanHint").style.display = "block";
+
+            } catch (err) {
+                alert("Something went wrong: " + err.message)
+            }
+        });
+
+        document.querySelectorAll(".meal-chip").forEach(btn => {
+            btn.addEventListener("click", () => {
+                btn.classList.toggle("active");
+                syncMealChips();
+            });
+        });
+
+        document.getElementById("ingredient").addEventListener("keydown", e => {
+            if (e.key === "Enter") { e.preventDefault(); addIngredient(); }
+        });
+        
+    </script>
 </body>
 </html>
